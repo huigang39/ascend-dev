@@ -9,34 +9,38 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
+#include <cmath>
 
 #define RAD2DEG(x) ((x)*180./M_PI)
 
 int round_double(double number)
 {
-    return (number > 0.0) ? (number + 0.5) : (number - 0.5);
+    return (number > 0.0) ? static_cast<int>(number + 0.5) : static_cast<int>(number - 0.5);
 }
 
-void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan)
+void scanCallback(const sensor_msgs::msg::LaserScan::SharedPtr scan)
 {
     int count = round_double(scan->scan_time / scan->time_increment);
-    ROS_INFO("[EAI INFO]: I heard a laser scan %s[%d]:", scan->header.frame_id.c_str(), count);
-    ROS_INFO("[EAI INFO]: angle_range, %f, %f", RAD2DEG(scan->angle_min), RAD2DEG(scan->angle_max));
+    RCLCPP_INFO(rclcpp::get_logger("eai_info"), "I heard a laser scan %s[%d]:", scan->header.frame_id.c_str(), count);
+    RCLCPP_INFO(rclcpp::get_logger("eai_info"), "angle_range, %f, %f", RAD2DEG(scan->angle_min), RAD2DEG(scan->angle_max));
 
-    for(int i = 0; i < count; i++) {
+    for (int i = 0; i < count; i++) {
         float degree = RAD2DEG(scan->angle_min + scan->angle_increment * i);
-        ROS_INFO(": [%f, %f]", degree, scan->ranges[i]);
+        RCLCPP_INFO(rclcpp::get_logger("eai_info"), ": [%f, %f]", degree, scan->ranges[i]);
     }
 }
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "flash_lidar_client");
-    ros::NodeHandle n;
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("flash_lidar_client");
 
-    ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, scanCallback);
+    auto subscription = node->create_subscription<sensor_msgs::msg::LaserScan>(
+        "/scan", 1000, scanCallback);
 
-    ros::spin();
+    rclcpp::spin(node);
+
+    rclcpp::shutdown();
 
     return 0;
 }
