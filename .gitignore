@@ -1,0 +1,4 @@
+.vscode
+ros2_humble_ws/log/
+ros2_humble_ws/build/
+ros2_humble_ws/install/
