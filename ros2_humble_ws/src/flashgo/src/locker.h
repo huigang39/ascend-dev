@@ -61,7 +61,7 @@ public:
 
             wait_time.tv_sec = timeout/1000 + now.tv_sec;
             wait_time.tv_nsec = (timeout%1000)*1000000 + now.tv_usec*1000;
-        
+
             if (wait_time.tv_nsec >= 1000000000)
             {
                ++wait_time.tv_sec;
@@ -148,5 +148,3 @@ public :
     ~ScopedLocker() {_binded.unlock();}
     Locker & _binded;
 };
-
-

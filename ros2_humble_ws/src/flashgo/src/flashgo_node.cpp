@@ -1,14 +1,14 @@
 /*
  *  FLASH LIDAR SYSTEM
- *  Flash Lidar ROS Node Client 
+ *  Flash Lidar ROS Node Client
  *
  *  Copyright 2015 - 2017 EAI TEAM
  *  http://www.eaibot.com
- * 
+ *
  */
 
-#include "ros/ros.h"
-#include "sensor_msgs/LaserScan.h"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/laser_scan.hpp"
 
 #include "flashgo.h"
 #include <vector>
@@ -59,7 +59,7 @@ void publish_scan(ros::Publisher *pub,  node_info *nodes,  size_t node_count, ro
     }
 
     int counts = node_count*((angle_max-angle_min)/360.0f);
-    
+
     int angle_start = 180+angle_min;
     int node_start = node_count*(angle_start/360.0f);
 
@@ -96,16 +96,16 @@ std::vector<int> split(const std::string &s, char delim) {
     return elems;
 }
 
-static void Stop(int signo)   
-{  
-    
+static void Stop(int signo)
+{
+
     printf("Received exit signal\n");
     flag = false;
     Flashgo::singleton()->disconnect();
-    Flashgo::done(); 
+    Flashgo::done();
     exit(1);
-     
-} 
+
+}
 
 int main(int argc, char * argv[]) {
     ros::init(argc, argv, "flash_lidar_node");
@@ -123,8 +123,8 @@ int main(int argc, char * argv[]) {
     ros::NodeHandle nh;
     ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1000);
     ros::NodeHandle nh_private("~");
-    nh_private.param<std::string>("port", port, "/dev/ttyACM0"); 
-    nh_private.param<int>("baudrate", baudrate, 115200); 
+    nh_private.param<std::string>("port", port, "/dev/ttyACM0");
+    nh_private.param<int>("baudrate", baudrate, 115200);
     nh_private.param<std::string>("frame_id", frame_id, "laser_frame");
     nh_private.param<bool>("angle_fixed", angle_fixed, "true");
     nh_private.param<double>("angle_max", angle_max , 180);
@@ -143,12 +143,12 @@ int main(int argc, char * argv[]) {
     }
 
 
-    Flashgo::initDriver(); 
+    Flashgo::initDriver();
     if (!Flashgo::singleton()) {
         fprintf(stderr, "[EAI ERROR]: Create Driver fail, exit\n");
         return -2;
     }
-    signal(SIGINT, Stop); 
+    signal(SIGINT, Stop);
     signal(SIGTERM, Stop);
 
     op_result = Flashgo::singleton()->connect(port.c_str(), (u_int32_t)baudrate);
@@ -164,7 +164,7 @@ int main(int argc, char * argv[]) {
                 break;
             }
         }
-        
+
         if(seconds > DELAY_SECONDS){
             fprintf(stderr, "[EAI ERROR]: Cannot bind to the specified serial port %s.\n" , port.c_str());
 	    Flashgo::singleton()->disconnect();
@@ -207,7 +207,7 @@ int main(int argc, char * argv[]) {
 
             if (op_result == 0) {
                 op_result = Flashgo::singleton()->ascendScanData(nodes, count);
-            
+
                 if (op_result == 0) {
                     if (angle_fixed) {
                         memset(all_nodes, 0, NODE_COUNTS*sizeof(node_info));
