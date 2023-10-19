@@ -1,11 +1,13 @@
 /*
- *  YDLIDAR SYSTEM
- *  YDLIDAR ROS Node Client
- *
- *  Copyright 2015 - 2017 EAI TEAM
- *  http://www.eaibot.com
- *
- */
+* @file flashgo_client.cpp
+* @author huigang39
+* @brief ROS2 client for FlashGo
+* @date 2023-10-19
+* @version 0.0.1
+* @note ROS2 client for FlashGo
+* @warning None.
+* @bug None.
+*/
 
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
