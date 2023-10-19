@@ -23,7 +23,7 @@
 
 static bool flag = true;
 
-void publish_scan(ros::Publisher *pub,  node_info *nodes,  size_t node_count, ros::Time start, double scan_time, float angle_min, float angle_max, std::string frame_id, std::vector<int> ignore_array)
+void publish_scan(rclcpp::Publisher *pub,  node_info *nodes,  size_t node_count, ros::Time start, double scan_time, float angle_min, float angle_max, std::string frame_id, std::vector<int> ignore_array)
 {
     sensor_msgs::LaserScan scan_msg;
     float nodes_array[node_count];
