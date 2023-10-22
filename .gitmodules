@@ -1,0 +1,3 @@
+[submodule "stsbot"]
+	path = stsbot
+	url = https://github.com/huigang39/stsbot.git
